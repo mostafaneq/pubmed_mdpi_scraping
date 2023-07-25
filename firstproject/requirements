@@ -1,6 +1,6 @@
 certifi==2021.5.30
 charset-normalizer==2.0.6
-datefinder-14day==0.1.1
+datefinder==0.1.1
 idna==3.2
 json5==0.9.6
 jsonschema==3.2.0
