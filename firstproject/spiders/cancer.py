@@ -29,12 +29,14 @@ class pubMed_spider(scrapy.Spider):
  start_urls = [f"https://pubmed.ncbi.nlm.nih.gov/?term={term}&filter=years.{i}-{j}"]
 
  def parse(self, response):
-   driver = webdriver.Chrome(executable_path="/Users/hp/Desktop/driver/chromedriver.exe")
-   driver1 = uc.Chrome(executable_path="/Users/hp/Desktop/driver/chromedriver.exe") 
-   driver.get(self.start_urls[0])
+   chrome_options = Options()
+   chrome_options.add_argument("--headless")
+   #driver = webdriver.Chrome(executable_path="/Users/hp/Desktop/driver/chromedriver.exe", options=chrome_options)
+   driver1 = uc.Chrome(executable_path="/Users/hp/Desktop/driver/chromedriver.exe",options=chrome_options)
+   driver1.get(self.start_urls[0])
    all_results={}
  # Get the total number of pages
-   nbr = driver.find_element_by_xpath("//*[@id='bottom-page-number-input']")
+   nbr = driver1.find_element_by_xpath("//*[@id='bottom-page-number-input']")
    nbr_page = int(nbr.get_attribute("max"))
    article_dict = {}
    def scrap(nbr):
@@ -91,34 +93,34 @@ class pubMed_spider(scrapy.Spider):
     
     for page_num in range(nbr, nbr+1):
      page_url = self.start_urls[0] + f"&page={page_num}"
-     driver.get(page_url)
-     articles = driver.find_elements(By.TAG_NAME, 'article')
+     driver1.get(page_url)
+     articles = driver1.find_elements(By.TAG_NAME, 'article')
      nbr_art=len(articles)
-     for i in range(1,10):   
-      driver.get(page_url)
+     for i in range(1,2):   
+      driver1.get(page_url)
       initial_XPATH=f"/html/body/main/div[9]/div[2]/section[1]/div[1]/div/article["+ str(i) +"]/div[2]/div[1]/a"                                                            
-      WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, initial_XPATH))).click()
+      WebDriverWait(driver1, 10).until(EC.visibility_of_element_located((By.XPATH, initial_XPATH))).click()
       sleep(2)
-      abs = driver.find_elements(By.TAG_NAME, "p")
+      abs = driver1.find_elements(By.TAG_NAME, "p")
       text = []
       for div in abs:
           text.append(div.text)
       abstract = list(set(text))
-      wait = WebDriverWait(driver, 15)
-      driver.execute_script("window.scrollBy(0, 200);")
+      wait = WebDriverWait(driver1, 15)
+      driver1.execute_script("window.scrollBy(0, 200);")
       try:
-       citation_button = driver.find_element(By.XPATH,'//*[@id="article-page"]/aside/div/div[2]/div/button[1]')
-       actions = ActionChains(driver)
+       citation_button = driver1.find_element(By.XPATH,'//*[@id="article-page"]/aside/div/div[2]/div/button[1]')
+       actions = ActionChains(driver1)
        actions.move_to_element(citation_button).click().perform() 
       except:
-         citation_button = driver.find_element(By.XPATH,'/html/body/div[5]/aside/div/div[1]/div/button[1]')
-         actions = ActionChains(driver)
+         citation_button = driver1.find_element(By.XPATH,'/html/body/div[5]/aside/div/div[1]/div/button[1]')
+         actions = ActionChains(driver1)
          actions.move_to_element(citation_button).click().perform() 
       try:  
-       copy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='article-page']/div[2]/div/div[2]/div[2]/button")))    
+       copy_button = WebDriverWait(driver1, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='article-page']/div[2]/div/div[2]/div[2]/button")))    
        copy_button.click()
       except:
-        copy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[5]/div[1]/div/div[2]/div[2]/button")))    
+        copy_button = WebDriverWait(driver1, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[5]/div[1]/div/div[2]/div[2]/button")))    
         copy_button.click()
       citation_1= pyperclip.paste()
       date_year_extracted = extract_date_and_year(citation_1)
@@ -132,30 +134,30 @@ class pubMed_spider(scrapy.Spider):
       match_pmid = re.search(r"PMID: (\d+)", citation_1)
       pmid = match_pmid.group(1) if match_pmid else ""
 
-      CURRENT=driver.current_url
+      CURRENT=driver1.current_url
       article_dict = {}
       link=""
       title=""
       try :
         sleep(5)
         try:
-          img_element = driver.find_element_by_xpath("/html/body/div[5]/aside/div/div[1]/div[1]/div/a")
+          img_element = driver1.find_element_by_xpath("/html/body/div[5]/aside/div/div[1]/div[1]/div/a")
         except:
-          img_element = driver.find_element_by_xpath("/html/body/div[5]/aside/div/div[1]/div[1]/div/a") 
+          img_element = driver1.find_element_by_xpath("/html/body/div[5]/aside/div/div[1]/div[1]/div/a") 
         link = img_element.get_attribute('href')
         title = img_element.get_attribute('title')
         if "GN1 Sistemas e Publicacoe" in title:
-           img_element2 = driver.find_element_by_xpath("/html/body/div[5]/aside/div/div[1]/div[1]/div/a[2]")
+           img_element2 = driver1.find_element_by_xpath("/html/body/div[5]/aside/div/div[1]/div[1]/div/a[2]")
            link = img_element2.get_attribute('href')
            driver.get(link)  
         elif "hogrefe" in link :
-           hogrefe =driver.find_element(By.CLASS_NAME,"authors-list") 
+           hogrefe =driver1.find_element(By.CLASS_NAME,"authors-list") 
            author=hogrefe.text    
         try:
-           driver.get(link)
+           driver1.get(link)
         except:
-           driver.get(link)     
-        current_url=driver.current_url
+           driver1.get(link)     
+        current_url=driver1.current_url
         sleep(6)
         if "jogc" in current_url:
           driver1.get(link)
@@ -183,7 +185,7 @@ class pubMed_spider(scrapy.Spider):
             else:
                all_results[f"data{i}"] = article_dict
             json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-            driver.get(page_url)
+            driver1.get(page_url)
           except:
             
              pass
@@ -213,7 +215,7 @@ class pubMed_spider(scrapy.Spider):
             else:
                 all_results[f"data{i}"] = article_dict
             json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-            driver.get(page_url)
+            driver1.get(page_url)
           except:
             
              pass
@@ -243,7 +245,7 @@ class pubMed_spider(scrapy.Spider):
             else:
                 all_results[f"data{i}"] = article_dict
             json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-            driver.get(page_url)
+            driver1.get(page_url)
           except:
             
              pass
@@ -272,7 +274,7 @@ class pubMed_spider(scrapy.Spider):
            else:
                 all_results[f"data{i}"] = article_dict
            json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-           driver.get(page_url)
+           driver1.get(page_url)
           except:
             
              pass
@@ -301,7 +303,7 @@ class pubMed_spider(scrapy.Spider):
            else:
                 all_results[f"data{i}"] = article_dict
            json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-           driver.get(page_url)
+           driver1.get(page_url)
           except:
             
              pass
@@ -330,7 +332,7 @@ class pubMed_spider(scrapy.Spider):
            else:
                 all_results[f"data{i}"] = article_dict
            json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-           driver.get(page_url)
+           driver1.get(page_url)
           except:
             
              pass
@@ -359,7 +361,7 @@ class pubMed_spider(scrapy.Spider):
            else:
                 all_results[f"data{i}"] = article_dict
            json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-           driver.get(page_url)
+           driver1.get(page_url)
           except:
             
              pass
@@ -388,7 +390,7 @@ class pubMed_spider(scrapy.Spider):
            else:
                 all_results[f"data{i}"] = article_dict
            json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-           driver.get(page_url)
+           driver1.get(page_url)
           except:
             
              pass
@@ -480,7 +482,7 @@ class pubMed_spider(scrapy.Spider):
             else:
                all_results[f"data{i}"] = article_dict
             json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-            driver.get(page_url)
+            driver1.get(page_url)
            except:
               print('non')
               pass
@@ -515,7 +517,7 @@ class pubMed_spider(scrapy.Spider):
            else:
                all_results[f"data{i}"] = article_dict
            json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-           driver.get(page_url)
+           driver1.get(page_url)
           except:
             
              pass
@@ -748,7 +750,7 @@ class pubMed_spider(scrapy.Spider):
            else:
               all_results[f"data{i}"] = article_dict
            json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-           driver.get(page_url)
+           driver1.get(page_url)
           except:
             
              pass
@@ -779,7 +781,7 @@ class pubMed_spider(scrapy.Spider):
            else:
               all_results[f"data{i}"] = article_dict
            json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')  
-           driver.get(page_url)
+           driver1.get(page_url)
           except:
             
              pass
@@ -806,7 +808,7 @@ class pubMed_spider(scrapy.Spider):
            else:
               all_results[f"data{i}"] = article_dict
            json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-           driver.get(page_url)
+           driver1.get(page_url)
           except:
             
              pass
@@ -2613,7 +2615,7 @@ class pubMed_spider(scrapy.Spider):
              pass
         else:
           print('else')
-          link_else=driver.current_url
+          link_else=driver1.current_url
           driver1.get(link_else)
           from urllib.parse import urlparse
           def extract_website_name(url):
@@ -2658,9 +2660,9 @@ class pubMed_spider(scrapy.Spider):
             pass
 
       except: 
-        current_url1=driver.current_url
-        driver.get(current_url1)
-        wait = WebDriverWait(driver, 15)
+        current_url1=driver1.current_url
+        driver1.get(current_url1)
+        wait = WebDriverWait(driver1, 15)
         article_dict['titre'] = titre
         try:
          article_dict['DATE_PUBLICATION'] = remove_repeated_words(date_year_extracted)
@@ -2686,7 +2688,7 @@ class pubMed_spider(scrapy.Spider):
    data_list = []
    last_successful_iteration = 0
 
-   for i in range(270,271):
+   for i in range(1,2):
         try:
             data = scrap(i)
             with open(f'C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json', 'wb') as f:
