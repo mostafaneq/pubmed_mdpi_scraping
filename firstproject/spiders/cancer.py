@@ -13,7 +13,6 @@ import undetected_chromedriver as uc
 from seleniumwire import webdriver
 from selenium_stealth import stealth
 from fastapi import FastAPI
-import pyperclip
 import re 
 from selenium.webdriver.common.action_chains import ActionChains
 import datefinder
@@ -38,7 +37,7 @@ class pubMed_spider(scrapy.Spider):
    chrome_options.add_argument('--start-maximized')
    chrome_options.add_argument('--headless')
    #driver = webdriver.Chrome(executable_path="/Users/hp/Desktop/driver/chromedriver.exe", options=chrome_options)
-   driver1 = uc.Chrome(executable_path="/Users/hp/Desktop/PubMed/chromedriver.exe",options=chrome_options)
+   driver1 = uc.Chrome(executable_path="/Users/hp/Desktop/PubMed/chromedriver.exe", options=chrome_options)
    driver1.get(self.start_urls[0])
    all_results={}
  # Get the total number of pages
@@ -119,13 +118,10 @@ class pubMed_spider(scrapy.Spider):
          citation_button = driver1.find_element(By.XPATH,'/html/body/div[5]/aside/div/div[1]/div/button[1]')
          actions = ActionChains(driver1)
          actions.move_to_element(citation_button).click().perform() 
-      try:  
-       copy_button = WebDriverWait(driver1, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='article-page']/div[2]/div/div[2]/div[2]/button")))    
-       copy_button.click()
-      except:
-        copy_button = WebDriverWait(driver1, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[5]/div[1]/div/div[2]/div[2]/button")))    
-        copy_button.click()
-      citation_1= pyperclip.paste()
+      sleep(5)
+      citation_= driver1.find_element(By.XPATH,"/html/body/div[5]/div[2]/div/div[2]/div[1]")
+      citation_1=citation_.text
+      print(citation_1)
       date_year_extracted = extract_date_and_year(citation_1)
       match_authors = re.search(r"^([^\.]+)\.", citation_1)
       authors = match_authors.group(1).strip() if match_authors else ""
@@ -2752,4 +2748,3 @@ class pubMed_spider(scrapy.Spider):
 
            
   
-
