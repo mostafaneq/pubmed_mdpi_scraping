@@ -10,7 +10,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import json
 import undetected_chromedriver as uc
-from seleniumwire import webdriver
 from selenium_stealth import stealth
 from fastapi import FastAPI
 import re 
@@ -98,7 +97,7 @@ class pubMed_spider(scrapy.Spider):
      driver1.get(page_url)
      articles = driver1.find_elements(By.TAG_NAME, 'article')
      nbr_art=len(articles)
-     for i in range(1,11):   
+     for i in range(1,2):   
       driver1.get(page_url)
       initial_XPATH=f"/html/body/main/div[9]/div[2]/section[1]/div[1]/div/article["+ str(i) +"]/div[2]/div[1]/a"                                                            
       WebDriverWait(driver1, 10).until(EC.visibility_of_element_located((By.XPATH, initial_XPATH))).click()
@@ -2746,5 +2745,18 @@ class pubMed_spider(scrapy.Spider):
         with open(f'ovarian{i}.json', 'w') as file:
             json.dump(updated_data, file, indent=4)
 
-           
+   combined_data = []
+   for i in range(1, last_successful_iteration + 1):
+    file_path = f'ovarian{i}.json'
+    with open(file_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        combined_data.extend(data)
+# Write the concatenated data to a new JSON file
+   output_file_path = 'combined_output.json'
+   with open(output_file_path, 'w', encoding='utf-8') as file:
+    json.dump(combined_data, file, indent=4)  
+   for i in range(1, last_successful_iteration + 1):
+    file_path = f'ovarian{i}.json'
+    if os.path.exists(file_path):
+        os.remove(file_path)      
   
