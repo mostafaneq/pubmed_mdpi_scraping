@@ -98,7 +98,7 @@ class pubMed_spider(scrapy.Spider):
      driver1.get(page_url)
      articles = driver1.find_elements(By.TAG_NAME, 'article')
      nbr_art=len(articles)
-     for i in range(1,2):   
+     for i in range(1,11):   
       driver1.get(page_url)
       initial_XPATH=f"/html/body/main/div[9]/div[2]/section[1]/div[1]/div/article["+ str(i) +"]/div[2]/div[1]/a"                                                            
       WebDriverWait(driver1, 10).until(EC.visibility_of_element_located((By.XPATH, initial_XPATH))).click()
@@ -2687,10 +2687,10 @@ class pubMed_spider(scrapy.Spider):
    data_list = []
    last_successful_iteration = 0
 
-   for i in range(1,2):
+   for i in range(1,3):
         try:
             data = scrap(i)
-            with open(f'C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json', 'wb') as f:
+            with open(f'ovarian{i}.json', 'wb') as f:
                 f.write(data)
             data_list.append(data)
             last_successful_iteration = i
@@ -2701,7 +2701,7 @@ class pubMed_spider(scrapy.Spider):
             continue
         sleep(5)
         import unicodedata
-        with open(f"C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json","r", encoding='utf-8') as f:
+        with open(f"ovarian{i}.json","r", encoding='utf-8') as f:
                  data = json.load(f)
         for key, record in data.items():
               if record['content']:
@@ -2735,15 +2735,15 @@ class pubMed_spider(scrapy.Spider):
                  name = unicodedata.name(author)
             authors_list = authors.split(",")
             record["authors"] = authors_list
-        with open(f"C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json", 'w') as file:
+        with open(f"ovarian{i}.json", 'w') as file:
             json.dump(data, file, indent=4)
         sleep(5)
-        with open(f'C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json','r', encoding='utf-8') as file:
+        with open(f'ovarian{i}.json','r', encoding='utf-8') as file:
             data = json.load(file)
         updated_data = []
         for key, value in data.items():
           updated_data.append(value)
-        with open(f'C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json', 'w') as file:
+        with open(f'ovarian{i}.json', 'w') as file:
             json.dump(updated_data, file, indent=4)
 
            
