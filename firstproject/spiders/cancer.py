@@ -32,7 +32,7 @@ class pubMed_spider(scrapy.Spider):
    chrome_options = Options()
    chrome_options.add_argument("--headless")
    #driver = webdriver.Chrome(executable_path="/Users/hp/Desktop/driver/chromedriver.exe", options=chrome_options)
-   driver1 = uc.Chrome(executable_path="/Users/hp/Desktop/driver/chromedriver.exe",options=chrome_options)
+   driver1 = uc.Chrome(executable_path="/Users/hp/Desktop/driver/chromedriver.exe")
    driver1.get(self.start_urls[0])
    all_results={}
  # Get the total number of pages
