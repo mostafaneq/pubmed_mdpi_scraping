@@ -30,13 +30,19 @@ class pubMed_spider(scrapy.Spider):
 
  def parse(self, response):
    chrome_options = Options()
-   chrome_options.add_argument("--headless")
+   chrome_options.add_argument('--window-size=1920x1080')
+   chrome_options.add_argument('--disable-gpu')
+   chrome_options.add_argument('--disable-extensions')
+   chrome_options.add_argument('--proxy-server="direct://"')
+   chrome_options.add_argument('--proxy-bypass-list=*')
+   chrome_options.add_argument('--start-maximized')
+   chrome_options.add_argument('--headless')
    #driver = webdriver.Chrome(executable_path="/Users/hp/Desktop/driver/chromedriver.exe", options=chrome_options)
-   driver1 = uc.Chrome(executable_path="/Users/hp/Desktop/driver/chromedriver.exe")
+   driver1 = uc.Chrome(executable_path="/Users/hp/Desktop/PubMed/chromedriver.exe",options=chrome_options)
    driver1.get(self.start_urls[0])
    all_results={}
  # Get the total number of pages
-   nbr = driver1.find_element_by_xpath("//*[@id='bottom-page-number-input']")
+   nbr = driver1.find_element(By.XPATH,"//*[@id='bottom-page-number-input']")
    nbr_page = int(nbr.get_attribute("max"))
    article_dict = {}
    def scrap(nbr):
@@ -44,11 +50,8 @@ class pubMed_spider(scrapy.Spider):
     global CURRENT
     global citation_1
     global abstract
-
-
     import re
     import datefinder
-
     def extract_date_from_text(text):
      matches = datefinder.find_dates(text)
      for match in matches:
@@ -141,13 +144,13 @@ class pubMed_spider(scrapy.Spider):
       try :
         sleep(5)
         try:
-          img_element = driver1.find_element_by_xpath("/html/body/div[5]/aside/div/div[1]/div[1]/div/a")
+          img_element = driver1.find_element(By.XPATH,"/html/body/div[5]/aside/div/div[1]/div[1]/div/a")
         except:
-          img_element = driver1.find_element_by_xpath("/html/body/div[5]/aside/div/div[1]/div[1]/div/a") 
+          img_element = driver1.find_element(By.XPATH,"/html/body/div[5]/aside/div/div[1]/div[1]/div/a") 
         link = img_element.get_attribute('href')
         title = img_element.get_attribute('title')
         if "GN1 Sistemas e Publicacoe" in title:
-           img_element2 = driver1.find_element_by_xpath("/html/body/div[5]/aside/div/div[1]/div[1]/div/a[2]")
+           img_element2 = driver1.find_element(By.XPATH,"/html/body/div[5]/aside/div/div[1]/div[1]/div/a[2]")
            link = img_element2.get_attribute('href')
            driver.get(link)  
         elif "hogrefe" in link :
@@ -396,14 +399,14 @@ class pubMed_spider(scrapy.Spider):
              pass
         elif "sciencedirect.com" in current_url:
           driver1.get(link)
-          sleep(8) 
+          sleep(8)
           try:   
             wait = WebDriverWait(driver1, 5)
             article_dict['titre'] = titre
             article_dict['authors'] = authors
             article_dict['PMID'] = pmid
             Content_texts=[]
-            p_tags = driver1.find_elements_by_tag_name("p")
+            p_tags = driver1.find_elements(By.TAG_NAME,"p")
             for tag in p_tags:
                if tag.text.strip() != "":
                   Content_texts.append(tag.text)
