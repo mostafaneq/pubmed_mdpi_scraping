@@ -2703,12 +2703,15 @@ class pubMed_spider(scrapy.Spider):
         import unicodedata
         with open(f"C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json","r", encoding='utf-8') as f:
                  data = json.load(f)
-        for key, record in data.items():
+        try:           
+         for key, record in data.items():
               if 'abstract' in record:
                  del record['abstract']
               else:
                  record['content']=record['abstract']
                  del record['abstract']
+        except:
+         continue
 
         for key, record in data.items():
                 date = record['DATE_PUBLICATION']
