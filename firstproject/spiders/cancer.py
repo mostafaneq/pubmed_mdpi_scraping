@@ -1,3 +1,4 @@
+import time
 import scrapy
 import os
 from time import sleep
@@ -98,7 +99,7 @@ class pubMed_spider(scrapy.Spider):
      driver1.get(page_url)
      articles = driver1.find_elements(By.TAG_NAME, 'article')
      nbr_art=len(articles)
-     for i in range(1,6):   
+     for i in range(1,7):   
       driver1.get(page_url)
       initial_XPATH=f"/html/body/main/div[9]/div[2]/section[1]/div[1]/div/article["+ str(i) +"]/div[2]/div[1]/a"                                                            
       WebDriverWait(driver1, 10).until(EC.visibility_of_element_located((By.XPATH, initial_XPATH))).click()
@@ -148,7 +149,7 @@ class pubMed_spider(scrapy.Spider):
         if "GN1 Sistemas e Publicacoe" in title:
            img_element2 = driver1.find_element(By.XPATH,"/html/body/div[5]/aside/div/div[1]/div[1]/div/a[2]")
            link = img_element2.get_attribute('href')
-           driver.get(link)  
+           driver1.get(link)  
         elif "hogrefe" in link :
            hogrefe =driver1.find_element(By.CLASS_NAME,"authors-list") 
            author=hogrefe.text    
@@ -416,11 +417,12 @@ class pubMed_spider(scrapy.Spider):
             else:
                  all_results[f"data{i}"] = article_dict
             json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
+            print(json_data2)
           except:
             
              pass
 
-        elif "mdpi" in current_url:
+        elif "mdpi.com" in current_url:
           driver1.get(link)
           sleep(5)
           try:
@@ -428,12 +430,16 @@ class pubMed_spider(scrapy.Spider):
            article_dict['titre'] = titre
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
-           p_tags = driver1.find_elements_by_class_name("html-p")
-           content=[]
-           for tag in p_tags:
+           try:
+            p_tags = driver1.find_elements(By.CLASS_NAME,"html-p")
+            content=[]
+            for tag in p_tags:
              if tag.text.strip() != "":
                content.append(tag.text)
-           article_dict['content'] = content
+            article_dict['content'] = content
+           except:
+             print('hna 3awtani')
+             pass
            article_dict['abstract'] = abstract
            article_dict['DATE_PUBLICATION'] = remove_repeated_words(date_year_extracted)
            article_dict['News_paper'] = "mdpi"
@@ -443,9 +449,10 @@ class pubMed_spider(scrapy.Spider):
            else:
                 all_results[f"data{i}"] = article_dict
            json_data2 = json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
+           print(json_data2)
           except:
-            
-             pass
+            print(hna)
+            pass
 
         elif "springermedizin" in current_url:
            pass
@@ -487,7 +494,7 @@ class pubMed_spider(scrapy.Spider):
               pass
            
         elif "onlinelibrary.wiley.com" in current_url:
-          stealth(driver,
+          stealth(driver1,
                  languages=["en-US", "en"],
                  vendor="Google Inc.",
                  platform="Win32",
@@ -501,7 +508,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['titre'] = titre
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
-           p_tags = driver1.find_elements_by_tag_name('p')
+           p_tags = driver1.find_elements(By.TAG_NAME,'p')
            content=[]
            for tag in p_tags:
              if tag.text.strip() != "":
@@ -897,7 +904,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['titre'] = titre
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
-           p_tags = driver1.find_elements_by_tag_name("p")
+           p_tags = driver1.find_elements(By.TAG_NAME,"p")
            content=[]
            for tag in p_tags:
              if tag.text.strip() != "":
@@ -924,7 +931,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['titre'] = titre
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
-           p_tags = driver1.find_elements_by_tag_name("p")
+           p_tags = driver1.find_elements(By.TAG_NAME,"p")
            content=[]
            for tag in p_tags:
              if tag.text.strip() != "":
@@ -950,7 +957,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['titre'] = titre
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
-           p_tags = driver1.find_elements_by_tag_name("p")
+           p_tags = driver1.find_elements(By.TAG_NAME,"p")
            content=[]
            for tag in p_tags:
              if tag.text.strip() != "":
@@ -976,7 +983,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['titre'] = titre
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
-           p_tags = driver1.find_elements_by_tag_name("p")
+           p_tags = driver1.find_elements_(By.TAG_NAME,"p")
            content=[]
            for tag in p_tags:
              if tag.text.strip() != "":
@@ -1514,7 +1521,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1543,7 +1550,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_element_by_xpath("//*[@id='vmMainPage']/table/tbody/tr[5]/td")
+             p_tags = driver1.find_element(By.XPATH,"//*[@id='vmMainPage']/table/tbody/tr[5]/td")
              article_dict['content'] = p_tags.text
              article_dict['abstract'] = abstract
              article_dict['News_paper'] = "elis.sk"
@@ -1568,7 +1575,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1596,7 +1603,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1624,7 +1631,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1652,7 +1659,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1680,7 +1687,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1708,7 +1715,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1736,7 +1743,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_class_name("core-container")
+             p_tags = driver1.find_elements(By.CLASS_NAME,"core-container")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1764,7 +1771,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_element_by_class_name("tab-content")
+             p_tags = driver1.find_element(By.CLASS_NAME,"tab-content")
              article_dict['content'] =p_tags.text
              article_dict['abstract'] = abstract
              article_dict['News_paper'] = "ingentaconnect"
@@ -1788,7 +1795,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_class_name("section")
+             p_tags = driver1.find_elements(By.CLASS_NAME,"section")
              content = []
              seen_text = set() # keep track of unique texts
              for tag in p_tags:
@@ -1819,7 +1826,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_element_by_class_name("padding_abstract justify ltr")
+             p_tags = driver1.find_element(By.CLASS_NAME,"padding_abstract justify ltr")
              article_dict['content'] = p_tags.text
              article_dict['abstract'] = abstract
              article_dict['News_paper'] = "journal.waocp"
@@ -1843,7 +1850,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1871,7 +1878,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1899,7 +1906,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1927,7 +1934,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1955,7 +1962,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -1983,7 +1990,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2011,7 +2018,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2039,7 +2046,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2067,7 +2074,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2095,7 +2102,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2126,7 +2133,7 @@ class pubMed_spider(scrapy.Spider):
            except:
              pass
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2154,7 +2161,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2168,7 +2175,7 @@ class pubMed_spider(scrapy.Spider):
              else:
               all_results[f"data{i}"] = article_dict
              json_data2 =json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
-             driver.get(page_url)
+             driver1.get(page_url)
            except:
              pass
           except:
@@ -2183,7 +2190,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_element_by_xpath("//*[@id='xplMainContentLandmark']/div/xpl-document-details/div/div[1]/div/div[2]/section/div[2]/div/xpl-document-abstract/section/div[2]/div[1]/div/div/div")
+             p_tags = driver1.find_element(By.XPATH,"//*[@id='xplMainContentLandmark']/div/xpl-document-details/div/div[1]/div/div[2]/section/div[2]/div/xpl-document-abstract/section/div[2]/div[1]/div/div/div")
              article_dict['content'] = p_tags.text
              article_dict['abstract'] = abstract
              article_dict['News_paper'] = "ieeexplore.ieee"
@@ -2208,7 +2215,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2236,7 +2243,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2264,7 +2271,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2292,7 +2299,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2320,7 +2327,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_id("article-body")
+             p_tags = driver1.find_elements(By.ID,"article-body")
              article_dict['content'] = p_tags.text
              article_dict['abstract'] = abstract
              article_dict['News_paper'] = "e-crt"
@@ -2344,7 +2351,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2372,7 +2379,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2400,7 +2407,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2428,7 +2435,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2456,7 +2463,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_tag_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2484,7 +2491,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_class_name("section")
+             p_tags = driver1.find_elements(By.CLASS_NAME,"section")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2512,7 +2519,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_class_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2540,7 +2547,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_class_name("p")
+             p_tags = driver1.find_elements(By.TAG_NAME,"p")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2568,7 +2575,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_elements_by_class_name("section")
+             p_tags = driver1.find_elements(By.CLASS_NAME,"section")
              content = []
              for tag in p_tags:
                if tag.text.strip() != "":
@@ -2596,7 +2603,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['authors'] = authors
            article_dict['PMID'] = pmid
            try:
-             p_tags = driver1.find_element_by_xpath("//*[@id='myTabContent']")
+             p_tags = driver1.find_element(By.XPATH,"//*[@id='myTabContent']")
              article_dict['content'] = p_tags.text
              article_dict['abstract'] = abstract
              article_dict['News_paper'] = "aimspress.com"
@@ -2608,9 +2615,8 @@ class pubMed_spider(scrapy.Spider):
              json_data2 =json.dumps(all_results, indent=4, ensure_ascii=False).encode('utf-8')
            except:
              pass
-           driver.get(page_url)
+           driver1.get(page_url)
           except:
-            
              pass
         else:
           print('else')
@@ -2633,7 +2639,7 @@ class pubMed_spider(scrapy.Spider):
            article_dict['PMID'] = pmid
            try:
             driver1.get(link)
-            p_tags = driver1.find_elements_by_tag_name("p")
+            p_tags = driver1.find_elements(By.TAG_NAME,"p")
             content = []
             for tag in p_tags:
                if tag.text.strip() != "":
@@ -2641,7 +2647,10 @@ class pubMed_spider(scrapy.Spider):
             article_dict['content'] = content
            except:
             driver1.get(link)
-            p_tags = driver1.find_elements_by_tag_name("section")
+            try: 
+             p_tags = driver1.find_elements(By.TAG_NAME,"section")
+            except:
+             p_tags = driver1.find_elements(By.CLASS_NAME,"section")
             content = []
             for tag in p_tags:
                if tag.text.strip() != "":
@@ -2703,17 +2712,18 @@ class pubMed_spider(scrapy.Spider):
         import unicodedata
         with open(f"C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json","r", encoding='utf-8') as f:
                  data = json.load(f)
-        try:           
+        try:
          for key, record in data.items():
-              if 'abstract' in record:
+              if record['content']:
                  del record['abstract']
               else:
                  record['content']=record['abstract']
                  del record['abstract']
         except:
-         continue
-
-        for key, record in data.items():
+          print('hna f abstract')
+          pass
+        try:
+         for key, record in data.items():
                 date = record['DATE_PUBLICATION']
                 if len(date) == 7 and date[4] == '-':
                    year = date[:4]
@@ -2732,35 +2742,47 @@ class pubMed_spider(scrapy.Spider):
                       '11': 'Nov',
                       '12': 'Dec'}
                    record['DATE_PUBLICATION'] = f"{year}-{month_mapping[month]}"
-        for key, record in data.items():
+        except:
+          print('date de pub')
+          pass
+        try:
+         for key, record in data.items():
             authors = record["authors"]
             for author in authors:
                  name = unicodedata.name(author)
             authors_list = authors.split(",")
             record["authors"] = authors_list
-        with open(f"C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json", 'w') as file:
+         with open(f"C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json", 'w') as file:
             json.dump(data, file, indent=4)
-        sleep(5)
-        with open(f'C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json','r', encoding='utf-8') as file:
+        except:
+          print('authors')
+          pass
+        try:
+         sleep(5)
+         with open(f'C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json','r', encoding='utf-8') as file:
             data = json.load(file)
-        updated_data = []
-        for key, value in data.items():
+         updated_data = []
+         for key, value in data.items():
           updated_data.append(value)
-        with open(f'C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json', 'w') as file:
+         with open(f'C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json', 'w') as file:
             json.dump(updated_data, file, indent=4)
-
+        except:
+          print('t7iyd DataX')
+          pass
    combined_data = []
-   for i in range(1, last_successful_iteration + 1):
+   for i in range(1, 3):
     file_path = f'C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json'
     with open(file_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
         combined_data.extend(data)
+
 # Write the concatenated data to a new JSON file
    output_file_path = 'C:\\Users\\hp\\Downloads\\output.json\\projet\\combined_output.json'
    with open(output_file_path, 'w', encoding='utf-8') as file:
-    json.dump(combined_data, file, indent=4)  
-   for i in range(1, last_successful_iteration + 1):
+     json.dump(combined_data, file, indent=4)
+   for i in range(1, 3):
     file_path = f'C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json'
     if os.path.exists(file_path):
-        os.remove(file_path)      
+        os.remove(file_path)
+           
   
