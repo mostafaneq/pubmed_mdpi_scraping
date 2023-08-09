@@ -99,7 +99,7 @@ class pubMed_spider(scrapy.Spider):
      driver1.get(page_url)
      articles = driver1.find_elements(By.TAG_NAME, 'article')
      nbr_art=len(articles)
-     for i in range(1,7):   
+     for i in range(1,nbr_art+1):   
       driver1.get(page_url)
       initial_XPATH=f"/html/body/main/div[9]/div[2]/section[1]/div[1]/div/article["+ str(i) +"]/div[2]/div[1]/a"                                                            
       WebDriverWait(driver1, 10).until(EC.visibility_of_element_located((By.XPATH, initial_XPATH))).click()
@@ -2696,7 +2696,7 @@ class pubMed_spider(scrapy.Spider):
    data_list = []
    last_successful_iteration = 0
 
-   for i in range(1,3):
+   for i in range(1,50):
         try:
             data = scrap(i)
             with open(f'C:\\Users\\hp\\Downloads\\output.json\\projet\\ovarian{i}.json', 'wb') as f:
