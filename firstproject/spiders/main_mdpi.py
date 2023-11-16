@@ -202,15 +202,15 @@ def scrap(search_term):
 
 
                 if third_word == 'mRNA':
-                    file_path = f'C:\\Users\\hp\\Downloads\\scraping_project\\scraping_proj\\firstproject\\spiders\\mdpi\\{first_word} AND mRNA{i}.json'
+                    file_path = f'{first_word} AND mRNA{i}.json'
                 elif third_word == 'lncRNA':
-                    file_path = f'C:\\Users\\hp\\Downloads\\scraping_project\\scraping_proj\\firstproject\\spiders\\mdpi\\{first_word} AND lncRNA{i}.json'
+                    file_path = f'{first_word} AND lncRNA{i}.json'
                 elif third_word == 'miRNA':
-                    file_path = f'C:\\Users\\hp\\Downloads\\scraping_project\\scraping_proj\\firstproject\\spiders\\mdpi\\{first_word} AND miRNA{i}.json'
+                    file_path = f'{first_word} AND miRNA{i}.json'
                 elif third_word == 'microRNA':
-                    file_path = f'C:\\Users\\hp\\Downloads\\scraping_project\\scraping_proj\\firstproject\\spiders\\mdpi\\{first_word} AND microRNA{i}.json'
+                    file_path = f'{first_word} AND microRNA{i}.json'
                 else:
-                    file_path = f'C:\\Users\\hp\\Downloads\\scraping_project\\scraping_proj\\firstproject\\spiders\\mdpi\\{first_word} AND non-coding RNA{i}.json'
+                    file_path = f'{first_word} AND non-coding RNA{i}.json'
         
                 with open(file_path, 'w', encoding='utf-8') as f:
                    json.dump(data, f, indent=4, ensure_ascii=False)
@@ -237,7 +237,7 @@ def scrap(search_term):
             except Exception as e:
                 print(f"An error occurred during iteration {i}: {e}. Retrying from iteration {last_successful_iteration + 1}...")
         try:
-               directory_path = 'C:\\Users\\hp\\Downloads\\scraping_project\\scraping_proj\\firstproject\\spiders\\mdpi'
+               directory_path = 'firstproject\\spiders'
                json_files = [f for f in os.listdir(directory_path) if f.startswith(search_term) and f.endswith('.json')]
 
                all_data = {}
@@ -260,7 +260,7 @@ def scrap(search_term):
                      except json.JSONDecodeError as json_error:
                            print(f"Error decoding JSON in {json_file}: {json_error}")
 
-               output_file_path = f'C:\\Users\\hp\\Downloads\\scraping_project\\scraping_proj\\firstproject\\spiders\\mdpi\\{search_term}.json'
+               output_file_path = f'{search_term}.json'
 
                with open(output_file_path, 'w', encoding='utf-8') as output_file:
                    json.dump(all_data, output_file, indent=4, ensure_ascii=False)
